@@ -10,8 +10,12 @@ import markovify
 with open ("padula.txt", "r") as myfile:
       padula_text=myfile.read().replace('\n', ' ')
 
+with open ("intro.txt", "r") as myfile:
+      intro_text=myfile.read().replace('\n', ' ')
+
 # Build the model.
 text_model = markovify.Text(padula_text)
+intro_model = markovify.Text(intro_text)
 
 #Create cleverbot instance
 cb1 = cleverbot.Cleverbot()
@@ -26,6 +30,7 @@ def OnAttach(status):
     if status == Skype4Py.apiAttachSuccess:
        print('***************************************')
        print('Type "markov" to generate sentences')
+       print('Type "intro" to generate sentences based on padulas bio')
        print('Type "exit" to quit')
        print('Type "help" for help')
 
@@ -64,8 +69,13 @@ while not Cmd == 'exit' and not Cmd == 'quit':
         for i in range(50):
             print(text_model.make_sentence())
             next
+    if Cmd == 'intro':
+        for i in range(50):
+            print(intro_model.make_sentence())
+            next
     if Cmd == 'help':
        print('Type "markov" to generate sentences')
+       print('Type "intro" to generate sentences based on padulas bio')
        print('Type "exit" to quit')
        print('Type "help" for help')
        next
