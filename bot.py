@@ -1,55 +1,74 @@
+import sys
+import os
+import time
 import Skype4Py
-import codecs
-import hashlib
-import logging
+import random
+import cleverbot
+import markovify
 
-# Create an instance of the Skype class.
-skype = Skype4Py.Skype()
+# Read text file, replace new lines with spaces, and save to variable
+with open ("padula.txt", "r") as myfile:
+      padula_text=myfile.read().replace('\n', ' ')
 
-# Variable to check if the script has attached to skype Successfully (skype.attach())
-status = Skype4Py.apiAttachSuccess
+# Build the model.
+text_model = markovify.Text(padula_text)
 
-# Checks if the Skype Object is already connected to the Skype Client Sucessfully then
-# Connects the Skype object to the Skype client if its not Successfull, otherwise
-# Does nothing.
-if status == 1:
-    skype.Attach()
-    print 'attached'
-else:
-    pass
-    print 'passed'
+#Create cleverbot instance
+cb1 = cleverbot.Cleverbot()
 
-print skype.Conferences[0]
+# Fired on attachment status change. Here used to re-attach this script to Skype in case attachment is lost. Just in
+#case.
+def OnAttach(status):
+    print 'API attachment status: ' + skype.Convert.AttachmentStatusToText(status)
+    if status == Skype4Py.apiAttachAvailable:
+        skype.Attach()
 
-# Pulls conversations and outputs them to a file.
-#LogFile = 'TeamUR.log'
-#iteratedObject = skype.Messages(Target =
-#for x in skype.ActiveChats:
-#    if len(x.Members) > 3:)
+    if status == Skype4Py.apiAttachSuccess:
+       print('***************************************')
+       print('Type "markov" to generate sentences')
+       print('Type "exit" to quit')
+       print('Type "help" for help')
 
-def get_chat_id(chat):
-    """
-    Get unique internal persistent id of the chat object.
 
-    All ids are URL safe.
+# Fired on chat message status change.
+# Statuses can be: 'UNKNOWN' 'SENDING' 'SENT' 'RECEIVED' 'READ'
 
-    This is the same id as in the web interface.
-
-    :param chat: Skype4Py.chat.Chat instance
-    """
-    m = hashlib.md5()
-    m.update(chat.Name)
-    return m.hexdigest()
-
-def FindGroupTarget():
-    for x in skype.ActiveChats:
-        if len(x.Members) > 20:
-            return x
+def OnMessageStatus(Message, Status):
+    if Status == 'RECEIVED':
+        print(Message.FromHandle + ': ' + Message.Body)
+        response = cb1.ask(Message.Body)
+        print('sending to: ' + Message.FromHandle + ' message: ' + response)
+        if response != "Developers, start your chat engines! Cleverscript.com." or "Create chatty bots for fun and games, or even for business - Cleverscript.com." or "*kicks you* Hey you! Chat to the free ANGRY DUDE iOS app!":
+            skype.SendMessage(Message.FromHandle, response)
         else:
-            pass
+            skype.SendMessage(Message.FromHandle, "No Comment")
 
-# Asks for a Username and Message, then sends the message.
-while 0==0:
-    Usr = raw_input('Who would you like to Send a message to (Skype Username): ')
-    Msg = raw_input('What would you like to Send: ')
-    skype.SendMessage(Usr, Msg)
+    if Status == 'READ':
+        print(Message.FromDisplayName + ': ' + Message.Body)
+
+    if Status == 'SENT':
+        print('Myself: ' + Message.Body)
+
+
+# Creating instance of Skype object, assigning handler functions and attaching to Skype.
+skype = Skype4Py.Skype()
+skype.OnAttachmentStatus = OnAttach
+skype.OnMessageStatus = OnMessageStatus
+
+print('***************************************')
+print 'Connecting to Skype..'
+skype.Attach()
+
+# Looping until user types 'exit'
+Cmd = ''
+while not Cmd == 'exit' and not Cmd == 'quit':
+    Cmd = raw_input('User/: ')
+    if Cmd == 'markov':
+        for i in range(50):
+            print(text_model.make_sentence())
+            next
+    if Cmd == 'help':
+       print('Type "markov" to generate sentences')
+       print('Type "exit" to quit')
+       print('Type "help" for help')
+       next
