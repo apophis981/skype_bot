@@ -8,17 +8,29 @@ import markovify
 
 # Read text file, replace new lines with spaces, and save to variable
 with open ("padula.txt", "r") as myfile:
-      padula_text=myfile.read().replace('\n', ' ')
+    padula_text=myfile.read().replace('\n', ' ')
 
 with open ("intro.txt", "r") as myfile:
-      intro_text=myfile.read().replace('\n', ' ')
+    intro_text=myfile.read().replace('\n', ' ')
 
 # Build the model.
 text_model = markovify.Text(padula_text)
 intro_model = markovify.Text(intro_text)
 
-#Create cleverbot instance
-cb1 = cleverbot.Cleverbot()
+cb = cleverbot.Cleverbot()
+def CreateCleverbot():
+    print ('NEW CLEVERBOT')
+    cb = cleverbot.Cleverbot()
+
+banned_words = ["Cleverbot", "ANGRY DUDE", "Cleverme", "Cleverscript.com",
+"Cleverscript", "Clevertweet", "Clevermessage",]
+def GenerateResponse(message):
+    response = cb.ask(message)
+    if (any(x in response for x in banned_words) or response == ''):
+        print('FOUND A BAD WORD: ' + response)
+        CreateCleverbot()
+        GenerateResponse(message)
+    return response
 
 # Fired on attachment status change. Here used to re-attach this script to Skype in case attachment is lost. Just in
 #case.
@@ -34,22 +46,20 @@ def OnAttach(status):
        print('Type "exit" to quit')
        print('Type "help" for help')
 
-
 # Fired on chat message status change.
 # Statuses can be: 'UNKNOWN' 'SENDING' 'SENT' 'RECEIVED' 'READ'
-
 def OnMessageStatus(Message, Status):
     if Status == 'RECEIVED':
         print(Message.FromHandle + ': ' + Message.Body)
-        response = cb1.ask(Message.Body)
+        response = GenerateResponse(Message.Body)
         print('sending to: ' + Message.FromHandle + ' message: ' + response)
         skype.SendMessage(Message.FromHandle, response)
 
     if Status == 'READ':
         print(Message.FromDisplayName + ': ' + Message.Body)
 
-    if Status == 'SENT':
-        print('Myself: ' + Message.Body)
+    #if Status == 'SENT':
+        #print('Myself: ' + Message.Body)
 
 
 # Creating instance of Skype object, assigning handler functions and attaching to Skype.
