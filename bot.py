@@ -1,7 +1,6 @@
 import sys
 import os
 import time
-<<<<<<< HEAD
 import random
 import Skype4Py
 import markovify
@@ -18,38 +17,6 @@ text_model = markovify.Text(padula_text)
 # Create Chatterbot Instance
 chatbot = ChatBot('Padula')
 trainer.TrainDefault(chatbot)
-=======
-import Skype4Py
-import random
-import cleverbot
-import markovify
-
-# Read text file, replace new lines with spaces, and save to variable
-with open ("padula.txt", "r") as myfile:
-    padula_text=myfile.read().replace('\n', ' ')
-
-with open ("intro.txt", "r") as myfile:
-    intro_text=myfile.read().replace('\n', ' ')
-
-# Build the model.
-text_model = markovify.Text(padula_text)
-intro_model = markovify.Text(intro_text)
-
-cb = cleverbot.Cleverbot()
-def CreateCleverbot():
-    print ('NEW CLEVERBOT')
-    cb = cleverbot.Cleverbot()
-
-banned_words = ["Cleverbot", "ANGRY DUDE", "Cleverme", "Cleverscript.com",
-"Cleverscript", "Clevertweet", "Clevermessage",]
-def GenerateResponse(message):
-    response = cb.ask(message)
-    if (any(x in response for x in banned_words) or response == ''):
-        print('FOUND A BAD WORD: ' + response)
-        CreateCleverbot()
-        GenerateResponse(message)
-    return response
->>>>>>> master
 
 # Fired on attachment status change. Here used to re-attach this script to Skype in case attachment is lost. Just in
 #case.
@@ -61,7 +28,6 @@ def OnAttach(status):
     if status == Skype4Py.apiAttachSuccess:
        print('***************************************')
        print('Type "markov" to generate sentences')
-<<<<<<< HEAD
        print('Type "exit" to quit')
        print('Type "help" for help')
        
@@ -80,27 +46,6 @@ def OnMessageStatus(Message, Status):
 
     if Status == 'SENT':
         print('Myself: ' + Message.Body)
-=======
-       print('Type "intro" to generate sentences based on padulas bio')
-       print('Type "exit" to quit')
-       print('Type "help" for help')
-
-# Fired on chat message status change.
-# Statuses can be: 'UNKNOWN' 'SENDING' 'SENT' 'RECEIVED' 'READ'
-def OnMessageStatus(Message, Status):
-    if Status == 'RECEIVED':
-        print(Message.FromHandle + ': ' + Message.Body)
-        response = GenerateResponse(Message.Body)
-        print('sending to: ' + Message.FromHandle + ' message: ' + response)
-        skype.SendMessage(Message.FromHandle, response)
-
-    if Status == 'READ':
-        print(Message.FromDisplayName + ': ' + Message.Body)
-
-    #if Status == 'SENT':
-        #print('Myself: ' + Message.Body)
-
->>>>>>> master
 
 # Creating instance of Skype object, assigning handler functions and attaching to Skype.
 skype = Skype4Py.Skype()
@@ -114,27 +59,13 @@ skype.Attach()
 # Looping until user types 'exit'
 Cmd = ''
 while not Cmd == 'exit' and not Cmd == 'quit':
-<<<<<<< HEAD
     Cmd = raw_input('User/: ')
-=======
-    Cmd = raw_input('')
->>>>>>> master
     if Cmd == 'markov':
         for i in range(50):
             print(text_model.make_sentence())
             next
-<<<<<<< HEAD
     if Cmd == 'help':
        print('Type "markov" to generate sentences')
-=======
-    if Cmd == 'intro':
-        for i in range(50):
-            print(intro_model.make_sentence())
-            next
-    if Cmd == 'help':
-       print('Type "markov" to generate sentences')
-       print('Type "intro" to generate sentences based on padulas bio')
->>>>>>> master
        print('Type "exit" to quit')
        print('Type "help" for help')
        next
