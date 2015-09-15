@@ -1,10 +1,5 @@
-import sys
-import os
-import time
-import Skype4Py
-import random
-import cleverbot
-import markovify
+import sys, import os, import time, import random, import Skype4Py, import markovify
+from chatterbot import ChatBot, import trainer
 
 # Read text file, replace new lines with spaces, and save to variable
 with open ("padula.txt", "r") as myfile:
@@ -13,8 +8,9 @@ with open ("padula.txt", "r") as myfile:
 # Build the model.
 text_model = markovify.Text(padula_text)
 
-#Create cleverbot instance
-cb1 = cleverbot.Cleverbot()
+# Create Chatterbot Instance
+chatbot = ChatBot('Padula')
+chatbot.trainer.TrainDefault()
 
 # Fired on attachment status change. Here used to re-attach this script to Skype in case attachment is lost. Just in
 #case.
@@ -28,27 +24,22 @@ def OnAttach(status):
        print('Type "markov" to generate sentences')
        print('Type "exit" to quit')
        print('Type "help" for help')
-
-
+       
 # Fired on chat message status change.
 # Statuses can be: 'UNKNOWN' 'SENDING' 'SENT' 'RECEIVED' 'READ'
 
 def OnMessageStatus(Message, Status):
     if Status == 'RECEIVED':
         print(Message.FromHandle + ': ' + Message.Body)
-        response = cb1.ask(Message.Body)
+        response = chatbot.get_response(Message.Body)
         print('sending to: ' + Message.FromHandle + ' message: ' + response)
-        if response != "Developers, start your chat engines! Cleverscript.com." or "Create chatty bots for fun and games, or even for business - Cleverscript.com." or "*kicks you* Hey you! Chat to the free ANGRY DUDE iOS app!":
-            skype.SendMessage(Message.FromHandle, response)
-        else:
-            skype.SendMessage(Message.FromHandle, "No Comment")
-
+        skype.SendMessage(Message.FromHandle, response)
+        
     if Status == 'READ':
         print(Message.FromDisplayName + ': ' + Message.Body)
 
     if Status == 'SENT':
         print('Myself: ' + Message.Body)
-
 
 # Creating instance of Skype object, assigning handler functions and attaching to Skype.
 skype = Skype4Py.Skype()
