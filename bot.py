@@ -1,5 +1,11 @@
-import sys, import os, import time, import random, import Skype4Py, import markovify
-from chatterbot import ChatBot, import trainer
+import sys
+import os
+import time
+import random
+import Skype4Py
+import markovify
+from chatterbot import ChatBot
+import trainer
 
 # Read text file, replace new lines with spaces, and save to variable
 with open ("padula.txt", "r") as myfile:
@@ -10,7 +16,7 @@ text_model = markovify.Text(padula_text)
 
 # Create Chatterbot Instance
 chatbot = ChatBot('Padula')
-chatbot.trainer.TrainDefault()
+trainer.TrainDefault(chatbot)
 
 # Fired on attachment status change. Here used to re-attach this script to Skype in case attachment is lost. Just in
 #case.

@@ -1,8 +1,8 @@
 import chatterbot
 #trainer module
 
-def TrainDefault():
-    chatterbot.train([
+def TrainDefault(botName):
+    botName.train([
         'Hi',
         'Hello.',
         'Where are you from?',
